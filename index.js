@@ -42,8 +42,8 @@ const swaggerOptions = {
       version: "1.0.0",
       termsOfService: "",
       contact: {
-        name: "Hoang Viet Thai",
-        email: "vietthai2099@gmail.com",
+        name: "Cong Son Tung",
+        email: "tungsuoihai@gmail.com",
       },
       license: {
         name: "Apache 2.0",
