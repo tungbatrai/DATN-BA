@@ -24,7 +24,7 @@ const getAllUser = (req, res, next) => {
     var fillEmail = req.query.email ? req.query.email.replace(/"/g, "") : null;
     var fillRole = req.query.role ? req.query.role.replace(/"/g, "") : null;
     var fillPhone = req.query.phone ? req.query.phone.replace(/"/g, "") : null;
-    sqlQuery = `select * from user where 
+    sqlQuery = `select * from user where is_delete = 'FALSE' and
     ${likeClause("name", fillName)} 
     ${likeClause("email", fillEmail)} 
     ${likeClause("phone", fillPhone)}  
@@ -73,6 +73,7 @@ const createAccount = async (req, res, next) => {
       phone: req.body.phone,
       password: hashPass,
       role: req.body.role,
+      is_delete: 'FALSE'
     };
     let checkEmail = db.query(
       "select * from user where `email` =?",
@@ -133,7 +134,7 @@ const login = async (req, res, next) => {
     var email = req.body.email;
     var password = req.body.password;
     let results = await db.query(
-      "SELECT * FROM user WHERE `email`=?",
+      "SELECT * FROM user WHERE `email`=? and is_delete = 'FALSE'",
       email,
       (err, respond) => {
         if (err) {
@@ -198,21 +199,21 @@ const vertifyEmail = (req, res, next) => {
       from: "shopmobieST@gmail.com",
       to: req.body.email,
       subject: "Code",
-      html: `<h1 style="text-align: center; font-weight: bold">VERTIFY EMAIL CODE</h1> <p style="color: blue;text-align: center; font-weight: 900; font-size: 30px">${code}</p>`
+      html: `<h1 style="text-align: center; font-weight: bold">VERTIFY EMAIL CODE</h1> <p style="color: blue;text-align: center; font-weight: 900; font-size: 30px">${code}</p>`,
     };
 
     transporter.sendMail(mailOptions, function (error, info) {
       if (error) {
         res.send({
           status: 400,
-          message: "vertify email fault"
-        })
+          message: "vertify email fault",
+        });
       } else {
         console.log("Email sent: " + info.response);
         res.send({
           status: 200,
-          message: "vertify email success"
-        })
+          message: "vertify email success",
+        });
       }
     });
   } catch (err) {
@@ -221,9 +222,73 @@ const vertifyEmail = (req, res, next) => {
     });
   }
 };
+const deleteUser = (req, res, next) => {
+  try {
+    var db = req.conn;
+    var idUser = req.params.id;
+    var updateStatus = {
+      is_delete: 'TRUE',
+    };
+    db.query(
+      `update user set ? where id = ?`,
+      [updateStatus, idUser],
+      (err, update) => {
+        if (err) {
+          res.status(400).send({ message: "error" });
+        } else {
+          res.status(200).send({ message: `delete success` });
+        }
+      }
+    );
+  } catch (err) {
+    res.send({ message: "something wrong" });
+  }
+};
+const updateUser = (req, res, next) => {
+  try {
+    var db = req.conn;
+    const accessToken = req.headers.authorization.split(" ")[1];
+    var userOld = jwt.decode(accessToken, config.JWT_SECRET);
+    const passChange = req.body.password
+      ? bcrypt.hash(req.body.password, 12)
+      : false;
+    db.query(`select * from user where id = ${userOld.id}`, (err, respond) => {
+      if (err) {
+        res.status(400).send({ message: "error" });
+        console.log(err);
+      } else {
+        var updateUserData = {
+          name: req.body.name ? req.body.name : respond[0].name,
+          email: req.body.email ? req.body.email : respond[0].email,
+          phone: req.body.phone ? req.body.phone : respond[0].phone,
+          password: passChange ? passChange : respond[0].password,
+          role: req.body.role ? req.body.role : respond[0].role,
+          is_delete: respond[0].is_delete,
+        };
+        db.query(
+          `update user set ? where id = ?`,
+          [updateUserData, userOld.id],
+          (err, updateRes) => {
+            if (err) {
+              res.status(400).send({ message: "error" });
+            } else {
+              res
+                .status(200)
+                .send({ data: updateRes, message: `update success` });
+            }
+          }
+        );
+      }
+    });
+  } catch (err) {
+    res.status(400).send({ message: "something wrong" });
+  }
+};
 module.exports = {
   createAccount,
   getAllUser,
   login,
-  vertifyEmail
+  vertifyEmail,
+  deleteUser,
+  updateUser,
 };

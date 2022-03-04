@@ -137,4 +137,56 @@ router.post("/login", controller.login);
  *              description: this is the default response
  */
 router.post("/vertify-email", controller.vertifyEmail);
+
+
+/**
+ * @swagger
+ * tags:
+ *  name: User
+ *  description: this for user api
+ * /user/{id}:
+ *  delete:
+ *      tags: [User]
+ *      security:
+ *          - Bearer: []
+ *      parameters:
+ *          - name: id
+ *            in: path
+ *            chema:
+ *                  type: integer
+ *      responses:
+ *          default:
+ *              description: this is the default response
+ */
+ router.delete("/:id", authorize('ADMIN') ,controller.deleteUser);
+
+ 
+/**
+ * @swagger
+ * /user:
+ *  put:
+ *      tags: [User]
+ *      security:
+ *          - Bearer: []
+ *      parameters:
+ *          - name: body
+ *            in: body
+ *            schema:
+ *                  type: object
+ *                  properties:
+ *                      name:
+ *                          type: string
+ *                      phone:
+ *                          type: string
+ *                      email:
+ *                          type: string
+ *                      role:
+ *                          type: string
+ *                      password:
+ *                          type: string
+ *      responses:
+ *          default:
+ *              description: this is the default response
+ */
+router.put("",authorize() ,controller.updateUser);
 module.exports = router;

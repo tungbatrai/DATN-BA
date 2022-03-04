@@ -1,6 +1,7 @@
 const {
   likeClause,
   removeLastAnd,
+  timeClause,
 } = require("../common/query/make_greate_query");
 const getAllOrder = (req, res, next) => {
   try {
@@ -19,13 +20,15 @@ const getAllOrder = (req, res, next) => {
       : null;
     var fillBName = req.query.brand ? req.query.brand.replace(/"/g, "") : null;
     var fillUName = req.query.user ? req.query.user.replace(/"/g, "") : null;
+    var startDate = req.query.startDate ? req.query.startDate : null;
+    var endDate = req.query.endDate ? req.query.endDate : null;
     var fillCName = req.query.category
       ? req.query.category.replace(/"/g, "")
       : null;
     var fillStatus = req.query.status
       ? req.query.status.replace(/"/g, "")
       : null;
-    var sqlQuery = `select o.id as id, p.name as product_name, u.name as user_name,b.name as brand_name, c.name as category_name, o.quantity as quantity, o.status as status 
+    var sqlQuery = `select o.*, p.name as product_name, u.name as user_name,b.name as brand_name, c.name as category_name
     from 
     orders o left join product p on o.product_id = p.id left JOIN user u on o.customer_id = u.id left join category c on p.cate_id = c.id left join brand b on p.brand_id=b.id 
     where 
@@ -33,7 +36,8 @@ const getAllOrder = (req, res, next) => {
     ${likeClause("u.name", fillUName)} 
     ${likeClause("b.name", fillBName)}  
     ${likeClause("c.name", fillCName)} 
-    ${likeClause("o.status", fillStatus)}`;
+    ${likeClause("o.status", fillStatus)}
+    ${timeClause("time_order", startDate, endDate)}`;
     let getAllElements = db.query(removeLastAnd(sqlQuery), (err, orders) => {
       if (err) console.log("err when get all element");
       else {
@@ -100,14 +104,17 @@ const createOrder = async (req, res, next) => {
     var db = req.conn;
     var quatityOrder = req.body.quantity;
     var productId = req.body.product_id;
+    var today = new Date();
     var data = {
       customer_id: req.body.customer_id,
       product_id: req.body.product_id,
+      ship_code: "",
       quantity: parseInt(req.body.quantity),
       status: req.body.status,
+      time_order: today,
     };
     let checkExisProduct = db.query(
-      "select * from product where id = ?",
+      "select * from product_type where id = ?",
       req.body.product_id,
       (err, product) => {
         if (err) console.log("error query product exist");
@@ -142,13 +149,13 @@ const createOrder = async (req, res, next) => {
                         "insert into orders set ?",
                         [data],
                         (err, respond) => {
-                          if (err) console.log("error when insert");
+                          if (err) console.log(err);
                           else {
                             var updateProduct = {
                               quantity: inventory,
                             };
                             let updateProductQuantity = db.query(
-                              "update product set ? where id = ?",
+                              "update product_type set ? where id = ?",
                               [updateProduct, productId],
                               (err, ress) => {
                                 if (err)
@@ -193,7 +200,7 @@ const deleteOrder = async (req, res, next) => {
           let quantityOrder = order[0].quantity;
           let productOrderId = order[0].product_id;
           let checkExistProduct = db.query(
-            "select * from product where id = ?",
+            "select * from product_type where id = ?",
             productOrderId,
             (err, product) => {
               if (err) console.log("error when check product exist");
@@ -209,7 +216,7 @@ const deleteOrder = async (req, res, next) => {
                       parseInt(product[0].quantity) + parseInt(quantityOrder),
                   };
                   let updateProductQuantity = db.query(
-                    "update product set ? where id = ?",
+                    "update product_type set ? where id = ?",
                     [updateProduct, productOrderId],
                     (err, ress) => {
                       if (err)
@@ -244,9 +251,42 @@ const deleteOrder = async (req, res, next) => {
     });
   }
 };
+const updateShipCode = async (req, res, next) => {
+  try {
+    var db = req.conn;
+    var id = req.params.id;
+    let checkOrderExist = db.query(
+      "select * from orders where id = ?",
+      id,
+      (err, order) => {
+        if (err) console.log("error when check exist order");
+        else {
+          let dataUpdate = {
+            ship_code: req.body.ship_code,
+            status: "SHIPPING",
+          };
+          db.query(
+            `update orders set ? where id = ?`,
+            [dataUpdate, id],
+            (err, respond) => {
+              err
+                ? res.status(400).send({ message: "error" })
+                : res.status(200).send({ message: "success" });
+            }
+          );
+        }
+      }
+    );
+  } catch (err) {
+    res.send({
+      message: "something wrong",
+    });
+  }
+};
 module.exports = {
   getAllOrder,
   createOrder,
   deleteOrder,
   getOrderDetail,
+  updateShipCode,
 };

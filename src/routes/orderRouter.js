@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const controller = require("../controllers/OrderController");
-
 /**
  * @swagger
  * tags:
@@ -37,6 +36,16 @@ const controller = require("../controllers/OrderController");
  *          - name: status
  *            in: query
  *            type: string
+ *          - name: startDate
+ *            in: query
+ *            type: string
+ *            default: 2022-01-31
+ *            pattern: '^\d{4}-\d{2}-\d{2}$'
+ *          - name: endDate
+ *            in: query
+ *            type: string
+ *            default: 2022-05-31
+ *            pattern: '^\d{4}-\d{2}-\d{2}$'
  *      responses:
  *          default:
  *              description: this is responses
@@ -79,7 +88,7 @@ router.get("/:id", controller.getOrderDetail);
  *                      type: integer
  *                  product_id:
  *                      type: integer
- *                  quatity:
+ *                  quantity:
  *                      type: integer
  *                  status:
  *                      type: string
@@ -106,4 +115,28 @@ router.post("", controller.createOrder);
  *              description: this is responses
  */
 router.delete("/:id", controller.deleteOrder);
+
+/**
+ * @swagger
+ * /order/{id}:
+ *  put:
+ *      tags: [Order]
+ *      security:
+ *          - Bearer: []
+ *      summary: delete order
+ *      parameters: 
+ *          - name: id
+ *            in: path
+ *            type: integer
+ *          - name: body
+ *            in: body
+ *            type: object
+ *            properties:
+ *                  ship_code:
+ *                      type: string
+ *      responses:
+ *          default:
+ *              description: this is responses
+ */
+ router.put("/:id",controller.updateShipCode);
 module.exports = router;

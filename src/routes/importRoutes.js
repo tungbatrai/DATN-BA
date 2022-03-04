@@ -35,6 +35,16 @@ const controller = require('../controllers/ImportController')
  *          - name: product
  *            in: query
  *            type: string
+ *          - name: startDate
+ *            in: query
+ *            type: string
+ *            default: 2022-01-31
+ *            pattern: '^\d{4}-\d{2}-\d{2}$'
+ *          - name: endDate
+ *            in: query
+ *            type: string
+ *            default: 2022-05-31
+ *            pattern: '^\d{4}-\d{2}-\d{2}$'
  *      responses:
  *          default:
  *              description: this is responses
