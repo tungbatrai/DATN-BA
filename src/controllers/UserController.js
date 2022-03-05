@@ -73,7 +73,7 @@ const createAccount = async (req, res, next) => {
       phone: req.body.phone,
       password: hashPass,
       role: req.body.role,
-      is_delete: 'FALSE'
+      is_delete: "FALSE",
     };
     let checkEmail = db.query(
       "select * from user where `email` =?",
@@ -227,7 +227,7 @@ const deleteUser = (req, res, next) => {
     var db = req.conn;
     var idUser = req.params.id;
     var updateStatus = {
-      is_delete: 'TRUE',
+      is_delete: "TRUE",
     };
     db.query(
       `update user set ? where id = ?`,
@@ -284,6 +284,78 @@ const updateUser = (req, res, next) => {
     res.status(400).send({ message: "something wrong" });
   }
 };
+const resetPassword = (req, res, next) => {
+  try {
+    var db = req.conn;
+    var email = req.query.email;
+    var newPass = Array(10)
+      .fill("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz")
+      .map(function (x) {
+        return x[Math.floor(Math.random() * x.length)];
+      })
+      .join("");
+    const passChange = bcrypt.hash(newPass, 12);
+
+    db.query(`select * from user where email = '${email}'`, (err, respond) => {
+      if (err) {
+        res.status(400).send({ message: "error" });
+        console.log(err);
+      } else {
+        var updateUserData = {
+          name: respond[0].name,
+          email: respond[0].email,
+          phone: respond[0].phone,
+          password: passChange,
+          role: respond[0].role,
+          is_delete: respond[0].is_delete,
+        };
+        db.query(
+          `update user set ? where email = '${email}'`,
+          [updateUserData],
+          (err, updateRes) => {
+            if (err) {
+              res.status(400).send({ message: "error" });
+            } else {
+              var transporter = nodemailer.createTransport(
+                smtpTransport({
+                  service: "gmail",
+                  auth: {
+                    user: "shopmobieST@gmail.com",
+                    pass: "tung123456",
+                  },
+                })
+              );
+
+              var mailOptions = {
+                from: "shopmobieST@gmail.com",
+                to: email,
+                subject: "Code",
+                html: `<h1 style="text-align: center; font-weight: bold">YOUR NEW PASSWORD</h1> <p style="color: blue;text-align: center; font-weight: 900; font-size: 30px">${newPass}</p>`,
+              };
+
+              transporter.sendMail(mailOptions, function (error, info) {
+                if (error) {
+                  res.send({
+                    status: 400,
+                    message: "wrong",
+                  });
+                } else {
+                  console.log("Email sent: " + info.response);
+                  res.send({
+                    status: 200,
+                    message: "reset password success",
+                  });
+                }
+              });
+            }
+          }
+        );
+      }
+    });
+  } catch (err) {
+    res.status(400).send({ message: "something wrong" });
+  }
+};
 module.exports = {
   createAccount,
   getAllUser,
@@ -291,4 +363,5 @@ module.exports = {
   vertifyEmail,
   deleteUser,
   updateUser,
+  resetPassword,
 };

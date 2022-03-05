@@ -189,4 +189,22 @@ router.post("/vertify-email", controller.vertifyEmail);
  *              description: this is the default response
  */
 router.put("",authorize() ,controller.updateUser);
+
+
+/**
+ * @swagger
+ * /user:
+ *  patch:
+ *      tags: [User]
+ *      summary: reset password
+ *      parameters:
+ *          - name: email
+ *            in: query
+ *            schema:
+ *                  type: string
+ *      responses:
+ *          default:
+ *              description: this is the default response
+ */
+ router.patch("", controller.resetPassword);
 module.exports = router;

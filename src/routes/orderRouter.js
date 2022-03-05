@@ -139,4 +139,22 @@ router.delete("/:id", controller.deleteOrder);
  *              description: this is responses
  */
  router.put("/:id",controller.updateShipCode);
+
+ /**
+ * @swagger
+ * /order/{id}:
+ *  patch:
+ *      tags: [Order]
+ *      security:
+ *          - Bearer: []
+ *      summary: delete order
+ *      parameters: 
+ *          - name: id
+ *            in: path
+ *            type: integer
+ *      responses:
+ *          default:
+ *              description: this is responses
+ */
+  router.patch("/:id",controller.makeCompleted);
 module.exports = router;

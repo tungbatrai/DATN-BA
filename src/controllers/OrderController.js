@@ -28,9 +28,9 @@ const getAllOrder = (req, res, next) => {
     var fillStatus = req.query.status
       ? req.query.status.replace(/"/g, "")
       : null;
-    var sqlQuery = `select o.*, p.name as product_name, u.name as user_name,b.name as brand_name, c.name as category_name
-    from 
-    orders o left join product p on o.product_id = p.id left JOIN user u on o.customer_id = u.id left join category c on p.cate_id = c.id left join brand b on p.brand_id=b.id 
+    var sqlQuery = `select o.*,pt.image as image, pt.price as price, pt.color, pt.type,
+    p.name as product_name, u.name as user_name,b.name as brand_name, c.name as category_name
+    from orders o LEFT JOIN product_type pt on o.product_id = pt.id LEFT JOIN product p on pt.product_id = p.id left JOIN user u on o.customer_id = u.id left join category c on p.cate_id = c.id left join brand b on p.brand_id=b.id
     where 
     ${likeClause("p.name", fillPName)} 
     ${likeClause("u.name", fillUName)} 
@@ -111,6 +111,8 @@ const createOrder = async (req, res, next) => {
       ship_code: "",
       quantity: parseInt(req.body.quantity),
       status: req.body.status,
+      phone_num: req.body.phone_num,
+      address: req.body.address,
       time_order: today,
     };
     let checkExisProduct = db.query(
@@ -283,10 +285,42 @@ const updateShipCode = async (req, res, next) => {
     });
   }
 };
+const makeCompleted = async (req, res, next) => {
+  try {
+    var db = req.conn;
+    var id = req.params.id;
+    let checkOrderExist = db.query(
+      "select * from orders where id = ?",
+      id,
+      (err, order) => {
+        if (err) console.log("error when check exist order");
+        else {
+          let dataUpdate = {
+            status: "COMPLETED",
+          };
+          db.query(
+            `update orders set ? where id = ?`,
+            [dataUpdate, id],
+            (err, respond) => {
+              err
+                ? res.status(400).send({ message: "error" })
+                : res.status(200).send({ message: "success" });
+            }
+          );
+        }
+      }
+    );
+  } catch (err) {
+    res.send({
+      message: "something wrong",
+    });
+  }
+};
 module.exports = {
   getAllOrder,
   createOrder,
   deleteOrder,
   getOrderDetail,
   updateShipCode,
+  makeCompleted
 };
