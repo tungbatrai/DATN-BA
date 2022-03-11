@@ -207,4 +207,22 @@ router.put("",authorize() ,controller.updateUser);
  *              description: this is the default response
  */
  router.patch("", controller.resetPassword);
+
+ /**
+ * @swagger
+ * /user/{id}:
+ *  get:
+ *      tags: [User]
+ *      summary: get user detail
+ *      parameters:
+ *          - name: id
+ *            in: path
+ *            chema:
+ *                  type: integer
+ *            required: true 
+ *      responses:
+ *          default:
+ *              description: this is the default response
+ */
+router.get("/:id", authorize('ADMIN') ,controller.getUser);
 module.exports = router;

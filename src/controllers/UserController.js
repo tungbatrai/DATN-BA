@@ -244,13 +244,13 @@ const deleteUser = (req, res, next) => {
     res.send({ message: "something wrong" });
   }
 };
-const updateUser = (req, res, next) => {
+const updateUser = async (req, res, next) => {
   try {
     var db = req.conn;
     const accessToken = req.headers.authorization.split(" ")[1];
     var userOld = jwt.decode(accessToken, config.JWT_SECRET);
     const passChange = req.body.password
-      ? bcrypt.hash(req.body.password, 12)
+      ? await bcrypt.hash(req.body.password, 12)
       : false;
     db.query(`select * from user where id = ${userOld.id}`, (err, respond) => {
       if (err) {
@@ -284,18 +284,17 @@ const updateUser = (req, res, next) => {
     res.status(400).send({ message: "something wrong" });
   }
 };
-const resetPassword = (req, res, next) => {
+const resetPassword = async (req, res, next) => {
   try {
     var db = req.conn;
     var email = req.query.email;
-    var newPass = Array(10)
+    var newPass = await Array(10)
       .fill("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz")
       .map(function (x) {
         return x[Math.floor(Math.random() * x.length)];
       })
       .join("");
-    const passChange = bcrypt.hash(newPass, 12);
-
+    const passChange = await bcrypt.hash(newPass, 12);
     db.query(`select * from user where email = '${email}'`, (err, respond) => {
       if (err) {
         res.status(400).send({ message: "error" });
@@ -356,6 +355,29 @@ const resetPassword = (req, res, next) => {
     res.status(400).send({ message: "something wrong" });
   }
 };
+const getUser = async (req, res, next) => {
+  try {
+    var db = req.conn;
+    let id = req.params.id;
+    let results = db.query(
+      `select * from user where id = ${id}`,
+      (err, respond) => {
+        if (err) console.log("error");
+        else {
+          res.send({
+            status: 200,
+            message: "success",
+            data: respond,
+          });
+        }
+      }
+    );
+  } catch (err) {
+    res.send({
+      message: "Something wrong",
+    });
+  }
+};
 module.exports = {
   createAccount,
   getAllUser,
@@ -364,4 +386,5 @@ module.exports = {
   deleteUser,
   updateUser,
   resetPassword,
+  getUser
 };
