@@ -76,9 +76,30 @@ const updateProductType = (req, res, next) => {
     res.send({ message: "something wrong" });
   }
 };
-
+const getDetail = (req, res, next) => {
+  try {
+    var db = req.conn;
+    var id = req.params.Id;
+    let createExecute = db.query(
+      "select * from product_type where id = ?",
+      [id],
+      (err, products) => {
+        if (err) console.log("error when insert to product type");
+        else {
+          res.send({
+            status: 200,
+            data: products,
+          });
+        }
+      }
+    );
+  } catch (err) {
+    res.send({ message: "something wrong" });
+  }
+};
 module.exports = {
   getAllProductType,
   createProductType,
-  updateProductType
+  updateProductType,
+  getDetail
 };

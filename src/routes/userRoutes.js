@@ -214,6 +214,8 @@ router.put("",authorize() ,controller.updateUser);
  *  get:
  *      tags: [User]
  *      summary: get user detail
+ *      security:
+ *          - Bearer: []
  *      parameters:
  *          - name: id
  *            in: path
@@ -224,5 +226,5 @@ router.put("",authorize() ,controller.updateUser);
  *          default:
  *              description: this is the default response
  */
-router.get("/:id", authorize('ADMIN') ,controller.getUser);
+router.get("/:id", authorize() ,controller.getUser);
 module.exports = router;

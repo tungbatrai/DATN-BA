@@ -24,6 +24,26 @@ const uploadController = require("../controllers/CloudinaryController")
  */
 router.get("/:pId",controller.getAllProductType)
 
+
+/**
+ * @swagger
+ * tags: 
+ *  name: Product Type
+ *  description: this is all api use for product type
+ * /productType/detail/{Id}:
+ *  get:
+ *      tags: [Product Type]
+ *      summary: get detail of a product type
+ *      parameters:
+ *          - name: Id
+ *            in: path
+ *            type: integer
+ *            required: true
+ *      responses:
+ *          default:
+ *              description: this is response
+ */
+ router.get("/detail/:Id",controller.getDetail)
 /**
  * @swagger
  * tags: 
