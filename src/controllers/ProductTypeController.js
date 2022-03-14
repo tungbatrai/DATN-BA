@@ -2,7 +2,7 @@ const getAllProductType = (req, res, next) => {
   try {
     var db = req.conn;
     var productId = req.params.pId;
-    sqlQuery = `select * from product_type where product_id = ${productId}`;
+    sqlQuery = `select * from product_type where product_id = ${productId} order by id desc`;
     let getAll = db.query(`${sqlQuery}`, (err, results) => {
       if (err) console.log("error when get all product type");
       else {

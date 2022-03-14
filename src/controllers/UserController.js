@@ -30,12 +30,12 @@ const getAllUser = (req, res, next) => {
     ${likeClause("phone", fillPhone)}  
     ${likeClause("role", fillRole)}`;
     console.log(removeLastAnd(sqlQuery));
-    let getAllElements = db.query(removeLastAnd(sqlQuery), (err, orders) => {
+    let getAllElements = db.query(`${removeLastAnd(sqlQuery)}order by id desc`, (err, orders) => {
       if (err) console.log("err when get all element");
       else {
         var totalElements = orders.length;
         let results = db.query(
-          `${removeLastAnd(sqlQuery)} limit ? offset ?`,
+          `${removeLastAnd(sqlQuery)} order by id desc limit ? offset ?`,
           [pageSize, skipNumber],
           (err, respond) => {
             if (err) console.log("error");

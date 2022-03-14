@@ -19,12 +19,12 @@ const getAllCategory = (req, res, next) => {
     sqlQuery = `select * from category 
     where 
     ${likeClause("name", fillName)}`;
-    let getAllElements = db.query(removeLastAnd(sqlQuery), (err, orders) => {
+    let getAllElements = db.query(`${removeLastAnd(sqlQuery)} order by id desc`, (err, orders) => {
       if (err) console.log("err when get all element");
       else {
         var totalElements = orders.length;
         let results = db.query(
-          `${removeLastAnd(sqlQuery)} limit ? offset ?`,
+          `${removeLastAnd(sqlQuery)} order by id desc limit ? offset ?`,
           [pageSize, skipNumber],
           (err, respond) => {
             if (err) console.log("error");
@@ -181,7 +181,7 @@ const getProductInCate = async (req, res, next) => {
             });
           } else {
             let updateQuery = db.query(
-              "select * from product where cate_id = ?",
+              "select * from product where cate_id = ? order by id desc",
               id,
               (err, products) => {
                 if (err) console.log("error query");

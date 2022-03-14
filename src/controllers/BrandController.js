@@ -23,7 +23,7 @@ const getAllBrand = (req, res, next) => {
       else {
         var totalElements = orders.length;
         let results = db.query(
-          `${removeLastAnd(sqlQuery)} limit ? offset ?`,
+          `${removeLastAnd(sqlQuery)} order by id desc limit ? offset ?`,
           [pageSize, skipNumber],
           (err, respond) => {
             if (err) console.log("error");
@@ -90,7 +90,7 @@ const getProductInBrand = async (req, res, next) => {
             });
           } else {
             let updateQuery = db.query(
-              "select * from product where brand_id = ?",
+              "select * from product where brand_id = ? order by id desc",
               id,
               (err, products) => {
                 if (err) console.log("error query");

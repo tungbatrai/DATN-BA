@@ -32,7 +32,7 @@ const getAllComment = (req, res, next) => {
            ${likeClause("u.name", fillUName)} 
            ${timeClause("c.time_comment", startDate, endDate)}
           `;
-    let getAllElements = db.query(removeLastAnd(sqlQuery), (err, orders) => {
+    let getAllElements = db.query(`${removeLastAnd(sqlQuery)}`, (err, orders) => {
       if (err) console.log("err when get all element");
       else {
         var totalElements = orders.length;

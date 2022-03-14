@@ -44,7 +44,7 @@ const getAllProduct = (req, res, next) => {
         else {
           var totalElements = orders.length;
           let results = db.query(
-            `${removeLastAnd(sqlQuery)} group by p.id limit ? offset ?`,
+            `${removeLastAnd(sqlQuery)} group by p.id order by id desc limit ? offset ?`,
             [pageSize, skipNumber],
             (err, respond) => {
               if (err) console.log("error");
@@ -103,7 +103,7 @@ const getAllProductClient = (req, res, next) => {
       else {
         var totalElements = orders.length;
         let results = db.query(
-          `${removeLastAnd(sqlQuery)} limit ? offset ?`,
+          `${removeLastAnd(sqlQuery)} order by id desc limit ? offset ?`,
           [pageSize, skipNumber],
           (err, respond) => {
             if (err) console.log("error");

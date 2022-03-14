@@ -43,7 +43,7 @@ const getAllOrder = (req, res, next) => {
       else {
         var totalElements = orders.length;
         let results = db.query(
-          `${removeLastAnd(sqlQuery)} limit ? offset ?`,
+          `${removeLastAnd(sqlQuery)} order by id desc limit ? offset ?`,
           [pageSize, skipNumber],
           (err, respond) => {
             if (err) console.log("error");
