@@ -48,7 +48,6 @@ const authorize = require("../common/authorization/authorization-middleware");
  *              description: this is the default response
  */
 router.get("", authorize("ADMIN"), controller.getAllUser);
-
 /**
  * @swagger
  * tags:
@@ -84,7 +83,6 @@ router.get("", authorize("ADMIN"), controller.getAllUser);
  *              description: this is the default response
  */
 router.post("/signup", controller.createAccount);
-
 /**
  * @swagger
  * tags:
@@ -111,7 +109,6 @@ router.post("/signup", controller.createAccount);
  *              description: this is the default response
  */
 router.post("/login", controller.login);
-
 /**
  * @swagger
  * tags:
@@ -137,8 +134,6 @@ router.post("/login", controller.login);
  *              description: this is the default response
  */
 router.post("/vertify-email", controller.vertifyEmail);
-
-
 /**
  * @swagger
  * tags:
@@ -158,9 +153,7 @@ router.post("/vertify-email", controller.vertifyEmail);
  *          default:
  *              description: this is the default response
  */
- router.delete("/:id", authorize('ADMIN') ,controller.deleteUser);
-
- 
+router.delete("/:id", authorize('ADMIN') ,controller.deleteUser);
 /**
  * @swagger
  * /user:
@@ -189,8 +182,6 @@ router.post("/vertify-email", controller.vertifyEmail);
  *              description: this is the default response
  */
 router.put("",authorize() ,controller.updateUser);
-
-
 /**
  * @swagger
  * /user:
@@ -207,7 +198,6 @@ router.put("",authorize() ,controller.updateUser);
  *              description: this is the default response
  */
  router.patch("", controller.resetPassword);
-
  /**
  * @swagger
  * /user/{id}:

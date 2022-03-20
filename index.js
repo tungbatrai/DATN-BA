@@ -17,9 +17,7 @@ const productTypeRoutes = require("./src/routes/productTypeRoutes");
 const authorize = require("./src/common/authorization/authorization-middleware");
 require("dotenv").config();
 const cors = require("cors");
-
 const port = process.env.PORT || 5000;
-
 var conn = mysql.createPool({
   host: process.env.HOST,
   user: process.env.USER,
@@ -32,13 +30,12 @@ const corsOptions = {
   credentials: true,
   optionSuccessStatus: 200,
 };
-
 const swaggerOptions = {
   swaggerDefinition: {
     swagger: "2.0",
     info: {
-      title: "API God",
-      description: "Chúa tể API <p>Role Admin: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6OTUsIm5hbWUiOiJ0ZXN0IiwiZW1haWwiOiJhZG1pbm5AZ21haWwuY29tIiwicGhvbmUiOiIwMzIzNTU0MzQzIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNjM4NDI5OTQyfQ.YfsjDeoPKvhY2GEoTOql6L_RHtQywVK5MB2MOjPfhRY</p>",
+      title: "API ",
+      description: " API <p>Role Admin: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6OTUsIm5hbWUiOiJ0ZXN0IiwiZW1haWwiOiJhZG1pbm5AZ21haWwuY29tIiwicGhvbmUiOiIwMzIzNTU0MzQzIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNjM4NDI5OTQyfQ.YfsjDeoPKvhY2GEoTOql6L_RHtQywVK5MB2MOjPfhRY</p>",
       version: "1.0.0",
       termsOfService: "",
       contact: {
@@ -62,29 +59,24 @@ const swaggerOptions = {
 
   apis: ["./src/routes/*.js"],
 };
-
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
-
 app.use("/swagger", swaggerUI.serve, swaggerUI.setup(swaggerDocs));
-
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
 // app.use("/image", express.static("src/image"));
-
 app.use(cors(corsOptions));
-
 app.use(function (req, res, next) {
   req.conn = conn;
   next();
 });
+// app.use("/api/import", importRoutes);
+
 
 app.use("/api/user", userRoutes);
 app.use("/api/product", productRoutes);
 app.use("/api/category", categoryRoutes);
 app.use("/api/order", authorize(), orderRoutes);
 app.use("/api/brand", brandRoutes);
-app.use("/api/import", importRoutes);
 app.use("/api/comment", commentRoutes);
 app.use("/api/rating", ratingRoutes);
 app.use("/api/productType", productTypeRoutes);

@@ -60,7 +60,6 @@ const getAllUser = (req, res, next) => {
     });
   }
 };
-
 const createAccount = async (req, res, next) => {
   try {
     var db = req.conn;
@@ -124,9 +123,6 @@ const createAccount = async (req, res, next) => {
       message: "Something wrong",
     });
   }
-};
-const hashPass = async (value) => {
-  return await bcrypt.hash(value, 12);
 };
 const login = async (req, res, next) => {
   try {
@@ -212,6 +208,7 @@ const vertifyEmail = (req, res, next) => {
         console.log("Email sent: " + info.response);
         res.send({
           status: 200,
+          code: code,
           message: "vertify email success",
         });
       }

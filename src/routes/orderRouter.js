@@ -90,7 +90,13 @@ router.get("/:id", controller.getOrderDetail);
  *                      type: integer
  *                  quantity:
  *                      type: integer
+ *                  ship_code:
+ *                      type: string
  *                  status:
+ *                      type: string
+ *                  address:
+ *                      type: string
+ *                  phone_num:
  *                      type: string
  *      responses:
  *          default:
@@ -132,7 +138,7 @@ router.delete("/:id", controller.deleteOrder);
  *            in: body
  *            type: object
  *            properties:
- *                  ship_code:
+ *                  status:
  *                      type: string
  *      responses:
  *          default:

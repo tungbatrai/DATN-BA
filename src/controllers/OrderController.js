@@ -108,7 +108,7 @@ const createOrder = async (req, res, next) => {
     var data = {
       customer_id: req.body.customer_id,
       product_id: req.body.product_id,
-      ship_code: "",
+      ship_code: req.body.ship_code,
       quantity: parseInt(req.body.quantity),
       status: req.body.status,
       phone_num: req.body.phone_num,
@@ -264,8 +264,8 @@ const updateShipCode = async (req, res, next) => {
         if (err) console.log("error when check exist order");
         else {
           let dataUpdate = {
-            ship_code: req.body.ship_code,
-            status: "SHIPPING",
+           // ship_code: req.body.ship_code,
+            status: req.body.status,
           };
           db.query(
             `update orders set ? where id = ?`,

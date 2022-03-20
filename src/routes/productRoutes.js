@@ -221,3 +221,4 @@ router.delete("/:id",authorize("ADMIN"),controller.deleteProduct);
  */
 router.post("/uploadUrl", uploadFiler.single("image"),uploadController.uploadProduct)
 module.exports = router;
+    
