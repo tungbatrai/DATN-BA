@@ -74,7 +74,7 @@ const getOrderDetail = async (req, res, next) => {
     var db = req.conn;
     var id = req.params.id;
     let results = db.query(
-      "select * from orders where id = ?",
+      "select o.*, p.*, pt.* from orders o left join product_type pt on o.product_id = pt.id left join product p on pt.product_id = p.id where o.id = ?",
       id,
       (err, respond) => {
         if (err) console.log("error");
